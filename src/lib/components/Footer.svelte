@@ -5,7 +5,7 @@
   <footer class="footer">
     <div class="container">
       <div class="copyright">
-        <p>&copy; {currentYear} GoalGamble. All rights reserved.</p>
+        <p>&copy; {currentYear} GoalGamble </p>
       </div>
       <nav>
         <ul class="nav-links">
@@ -21,7 +21,7 @@
     .footer {
       background-color: #f4f4f4;
       color: #000000;
-      padding: 2rem 0;
+      padding: 1rem 0;
       margin-top: 2rem;
     }
   

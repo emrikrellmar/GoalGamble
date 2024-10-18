@@ -15,7 +15,6 @@
         <ul class="nav-links">
           <li><a href="/">Home</a></li>
           <li><a href="/bets">Bets</a></li>
-          <li><a href="/live">Live</a></li>
           <li><a href="/account">My Account</a></li>
         </ul>
       </nav>
@@ -27,7 +26,6 @@
     </div>
   </header>
   
-  
   <style>
     .header {
       background-color: #f4f4f4;
@@ -37,24 +35,37 @@
   
     .container {
       max-width: 1200px;
+      margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-left: 100px;
+      padding: 1rem;
+      position: relative;
+    }
+  
+    .logo {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
     }
   
     .logo h1 {
-      font-size: 1.5rem;
+      font-size: 3rem;
       font-weight: bold;
       color: #333;
-      text-align: left;
-      margin-left: 0;
+      margin: 0;
+      white-space: nowrap;
+    }
+  
+    nav {
+      margin-left: auto;
     }
   
     .nav-links {
       list-style-type: none;
-      padding-right: 30px;
+      padding: 0;
       display: flex;
+      margin: 1;
     }
   
     .nav-links li {
@@ -73,11 +84,11 @@
     }
   
     .menu-toggle {
-      padding-right: 40px;
       display: none;
       background: none;
       border: none;
       cursor: pointer;
+      margin-left: 1rem;
     }
   
     .bar {
@@ -89,6 +100,16 @@
     }
   
     @media (max-width: 768px) {
+      .container {
+        justify-content: flex-end;
+      }
+  
+      .logo {
+        position: static;
+        transform: none;
+        margin-right: auto;
+      }
+  
       .nav-links {
         display: none;
       }
@@ -101,7 +122,7 @@
         left: 0;
         right: 0;
         background-color: #f4f4f4;
-        padding: 1rem;
+        padding: 0.2rem;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
   
@@ -111,6 +132,7 @@
   
       .menu-toggle {
         display: block;
+        padding-right: 1rem;
       }
     }
   </style>

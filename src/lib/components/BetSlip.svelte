@@ -21,7 +21,7 @@
   </script>
   
   <div class="bet-slip">
-    <p>Your Balance: {$user.balance.toFixed(2)} coins</p>
+    <p>Your Balance: <strong>{$user.balance.toFixed(2)}</strong> credits</p>
     <h2>Bet Slip</h2>
     {#if $bets.length === 0}
       <p>Your bet slip is empty.</p>
