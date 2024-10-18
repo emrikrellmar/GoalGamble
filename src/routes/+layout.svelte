@@ -2,12 +2,10 @@
     import Header from '$lib/components/Header.svelte';
     import Footer from '$lib/components/Footer.svelte';
     import BetSlip from '$lib/components/BetSlip.svelte';
-    import UserBalance from '$lib/components/UserBalance.svelte';
   </script>
   
   <div class="app">
     <Header />
-    <UserBalance />
     <main>
       <div class="content">
         <slot />

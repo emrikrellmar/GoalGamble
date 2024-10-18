@@ -21,6 +21,7 @@
   </script>
   
   <div class="bet-slip">
+    <p>Your Balance: {$user.balance.toFixed(2)} coins</p>
     <h2>Bet Slip</h2>
     {#if $bets.length === 0}
       <p>Your bet slip is empty.</p>
@@ -39,10 +40,10 @@
   </div>
   
   <style>
+
     .bet-slip {
       background: #f4f4f4;
-      padding: 1rem;
-      border-radius: 4px;
+      padding: 0.5rem;
     }
   
     ul {

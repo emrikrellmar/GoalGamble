@@ -1,3 +1,5 @@
+import '$lib/utils/api.js'
+
 const API_KEY = '17591892a900c7676cacf111d27ef8d6';
 const API_BASE_URL = 'https://v3.football.api-sports.io';
 
@@ -20,14 +22,16 @@ async function fetchAPI(endpoint, params = {}) {
   return response.json();
 }
 
-export async function fetchLeagues() {
-  return fetchAPI('leagues');
-}
-
-export async function fetchFixtures(leagueId, season) {
-  return fetchAPI('fixtures', { league: leagueId, season: season });
+// Fetch fixtures for a specific league and season, with optional parameters
+export async function fetchFixtures(leagueId, season, additionalParams = {}) {
+  const params = { league: leagueId, season: season, ...additionalParams };
+  return fetchAPI('fixtures', params);
 }
 
 export async function fetchOdds(fixtureId) {
   return fetchAPI('odds', { fixture: fixtureId, bet: 1 });
+}
+
+export async function fetchLeagues() {
+  return fetchAPI('leagues');
 }

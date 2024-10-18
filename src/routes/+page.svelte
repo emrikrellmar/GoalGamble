@@ -7,5 +7,4 @@
     <title>GoalGamble - Home</title>
   </svelte:head>
   
-  <h1>Welcome to GoalGamble </h1>
   <MatchList matches={data.matches} />
