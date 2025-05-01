@@ -5,7 +5,7 @@ A gambling website with virtual credits built with SvelteKit, JavaScript, CSS, a
 ## Features
 
 - User authentication (login and registration)
-- Roulette game with animations and bet tracking
+- Betting games with animations and bet tracking
 - Virtual credit system
 - Betting history
 - Mobile-responsive design
