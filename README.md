@@ -12,7 +12,7 @@ A gambling website with virtual credits built with SvelteKit, JavaScript, CSS, a
 
 ## Technology Stack
 
-- **Frontend**: SvelteKit, JavaScript, CSS
-- **Backend**: SvelteKit, Supabase
-- **Database**: PostgreSQL (via Supabase)
+- **Frontend**: Svelte, SvelteKit, JavaScript, CSS
+- **Backend**: Svelte, JavaScrip 
+- **Database**: Supabase
 - **Authentication**: Supabase Auth
