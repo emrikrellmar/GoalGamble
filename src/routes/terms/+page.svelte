@@ -1,9 +1,9 @@
 <svelte:head>
   <title>Terms - GoalGamble</title>
-</svelte:head>
+</svelte:head> 
 
     <body>
-        <div class="terms-content">
+        <div class="terms-content"> 
             <section class="terms-section">
                 <h1>Terms of Service</h1>
     

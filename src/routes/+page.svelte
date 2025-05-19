@@ -8,7 +8,7 @@
 </script>
 
 <div class="home-container">
-  <div class="hero-section">
+  <div class="hero-section"> <!-- If satser beroende på om användaren är inloggad, ser därefter olika rubriker -->
     {#if !$authStore.user}
     <h1>Predict. Bet. Win.</h1>
     {:else}
@@ -16,7 +16,7 @@
     {/if}
     
     {#if !$authStore.user}
-    <p class="hero-subtitle">
+    <p class="hero-subtitle"> <!-- If sats beroende på om användaren är inloggad igen -->
       Experience the thrill of betting without the risk! GoalGamble lets you create your own account, place bets on matches or games, and earn virtual credits to climb the leaderboard!
     </p>
     {:else}
@@ -38,7 +38,7 @@
   </div>
 
   <div class="features-section">
-    <div class="feature-card">
+    <div class="feature-card"> 
       <div class="feature-icon">🎯</div>
       <h3>Risk-Free Betting</h3>
       <p>Use virtual credits to practice your betting strategy without real money</p>
@@ -61,14 +61,14 @@
     <div class="leaderboard-container">
       <h2 class="section-title">Leaderboard.</h2>
       <div class="leaderboard-wrapper">
-        <Leaderboard limit={5} sortBy="credits" />
+        <Leaderboard limit={5} sortBy="credits" /> <!-- Importerar leaderboard komponenten, limit 5, sortera efter "credits" -->
       </div>
     </div>
   </div>
   
   <div class="free-service-section">
     <div class="free-service-container">
-      <h2 class="section-title">Completely Free.</h2>
+      <h2 class="section-title">Completely Free.</h2> 
       <div class="free-content">
         <p>GoalGamble is and always will be 100% free. We don't ask for your payment information or hidden fees.</p>
         

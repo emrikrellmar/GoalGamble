@@ -229,7 +229,7 @@ async function saveProfile() {
         },
         {
           id: 'first_bet',
-          title: 'First Steps',
+          title: 'First Bet',
           description: 'Place your first bet',
           icon: '🎲',
           requirement: 1,

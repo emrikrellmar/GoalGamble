@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-export const authStore = writable({
+export const authStore = writable({ // AUTH STORE FÖR USER
     user: null,
     loading: true
 });

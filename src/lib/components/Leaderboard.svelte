@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from 'svelte';
+    import { onMount } from 'svelte'; // Leaderboard från databas supabase
     import { supabase } from '$lib/supabase';
     
     export let limit = 5;  

@@ -79,7 +79,6 @@
     </div>
   {:else}
     <div class="leaderboards-grid">
-      <!-- Most Credits Leaderboard -->
       <div class="leaderboard-card">
         <div class="leaderboard-title">
           <h2>Most Credits</h2>
@@ -118,7 +117,6 @@
         {/if}
       </div>
       
-      <!-- Most Wins Leaderboard -->
       <div class="leaderboard-card">
         <div class="leaderboard-title">
           <h2>Most Wins</h2>
@@ -157,7 +155,6 @@
         {/if}
       </div>
       
-      <!-- Most Active Leaderboard -->
       <div class="leaderboard-card">
         <div class="leaderboard-title">
           <h2>Most Active</h2>

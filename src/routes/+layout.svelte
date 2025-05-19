@@ -4,7 +4,6 @@
   import { authStore } from '$lib/stores/auth';
   import Header from '$lib/components/Header.svelte';
   import Footer from '$lib/components/Footer.svelte';
-  // Include any other imports you have here
 
   let isLoading = true;
 

@@ -10,7 +10,6 @@ export const load = async ({ locals }) => {
       };
     }
     
-    // Load profile data
     const { data: profile } = await locals.supabase
       .from('profiles')
       .select('*')

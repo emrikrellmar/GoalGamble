@@ -82,7 +82,6 @@ declare module '$env/static/private' {
 	export const CHROME_DESKTOP: string;
 	export const KDE_SESSION_UID: string;
 	export const npm_lifecycle_script: string;
-	export const QV4_GC_TIMELIMIT: string;
 	export const VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
 	export const npm_config_npm_version: string;
 	export const XDG_SESSION_CLASS: string;
@@ -92,7 +91,6 @@ declare module '$env/static/private' {
 	export const npm_config_prefix: string;
 	export const USER: string;
 	export const VSCODE_GIT_IPC_HANDLE: string;
-	export const QT_WAYLAND_RECONNECT: string;
 	export const KDE_SESSION_VERSION: string;
 	export const PAM_KWALLET5_LOGIN: string;
 	export const DISPLAY: string;
@@ -217,7 +215,6 @@ declare module '$env/dynamic/private' {
 		CHROME_DESKTOP: string;
 		KDE_SESSION_UID: string;
 		npm_lifecycle_script: string;
-		QV4_GC_TIMELIMIT: string;
 		VSCODE_GIT_ASKPASS_EXTRA_ARGS: string;
 		npm_config_npm_version: string;
 		XDG_SESSION_CLASS: string;
@@ -227,7 +224,6 @@ declare module '$env/dynamic/private' {
 		npm_config_prefix: string;
 		USER: string;
 		VSCODE_GIT_IPC_HANDLE: string;
-		QT_WAYLAND_RECONNECT: string;
 		KDE_SESSION_VERSION: string;
 		PAM_KWALLET5_LOGIN: string;
 		DISPLAY: string;

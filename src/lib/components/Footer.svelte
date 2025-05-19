@@ -1,5 +1,5 @@
 <script>
-    const currentYear = new Date().getFullYear();
+    const currentYear = new Date().getFullYear(); // Datum, hämtar nuvarande år
 </script>
   
   <footer>

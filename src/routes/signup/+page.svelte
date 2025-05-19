@@ -91,7 +91,7 @@
             />
           </div>
           
-          <div class="form-group">
+          <div class="form-group"> <!-- Lösenords ruta, visar **** istället öppet vad lösenord är, minst 6 tecken -->
             <label for="password">Password</label>
             <input 
               type="password" 
@@ -100,8 +100,7 @@
               required 
               placeholder="••••••••"
               disabled={loading}
-              autocomplete="new-password"
-              minlength="6"
+              minlength="6"  
             />
           </div>
           
@@ -121,7 +120,7 @@
       </div>
 
       <div class="terms-agreement">
-        By creating an account you accept our <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a> <!-- Länk till terms och privacy -->
+        By creating an account you accept our <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a> <!-- Länk till terms och privacy för snygghets skull ;) -->
       </div>
     </div>
   </div>

@@ -133,206 +133,176 @@
   });
     
   function startRideTheBus() {    
-    if (!isLoggedIn) {
-      gameMessage = "Please log in to place bets.";
-      return;
-    }
-    
-    if (isLoggedIn && profile && profile.credits < betAmount) {
-      gameMessage = "Not enough credits for this bet!";
-      return;
-    }
-    
-    rideTheBusActive = true;
-    rideTheBusStage = 'color';
-    gameMessage = "Guess the card color (red or black)";
-    busCards = [];
-    gameHistory = [];
-    potentialWinnings = betAmount * 2; 
-  }
-  
-  function dealNewCard() {
-    const suits = ["♠️", "♥️", "♦️", "♣️"];
-    const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-    
-    const suit = suits[Math.floor(Math.random() * suits.length)];
-    const value = values[Math.floor(Math.random() * values.length)];
-    const color = (suit === "♥️" || suit === "♦️") ? "red" : "black";
-    const numValue = values.indexOf(value) + 1;
-    
-    previousCard = busCards.length > 0 ? busCards[busCards.length - 1] : null;
-    
-    busCards = [...busCards, {
-      suit,
-      value,
-      color,
-      numValue
-    }];
-    
-    return busCards[busCards.length - 1]; 
-  }
-  
-  function makeGuess(guess) {
-    if (!rideTheBusActive) return;
-    
-    currentGuess = guess;
-    let correct = false;
-    
-    const currentCard = dealNewCard();
-    
-    if (rideTheBusStage === 'color') {
-      correct = guess === currentCard.color;
-      
-      gameHistory = [...gameHistory, {
-        stage: 'Color',
-        guess,
-        card: `${currentCard.value}${currentCard.suit}`,
-        correct
-      }];
-      
-      if (correct) {
-        gameMessage = "Correct! Now guess if the next card is higher or lower";
-        rideTheBusStage = 'highlow';
-        potentialWinnings = betAmount * 4; 
-      } else {
-        endGame(false);
-      }
-    } else if (rideTheBusStage === 'highlow') {
-      const prevCard = busCards[busCards.length - 2];
-      
-      if (guess === 'higher') {
-        correct = currentCard.numValue > prevCard.numValue;
-      } else {
-        correct = currentCard.numValue < prevCard.numValue;
-      }
-      
-      if (currentCard.numValue === prevCard.numValue) {
-        correct = false;
-      }
-      
-      gameHistory = [...gameHistory, {
-        stage: 'High/Low',
-        guess,
-        card: `${currentCard.value}${currentCard.suit}`,
-        correct
-      }];
-      
-      if (correct) {
-        gameMessage = "Correct! Now guess if the next card is inside or outside the range";
-        rideTheBusStage = 'inout';
-        potentialWinnings = betAmount * 8; 
-      } else {
-        endGame(false);
-      }
-    } else if (rideTheBusStage === 'inout') {
-      const card1 = busCards[busCards.length - 3].numValue;
-      const card2 = busCards[busCards.length - 2].numValue;
-      const currentValue = currentCard.numValue;
-      
-      const min = Math.min(card1, card2);
-      const max = Math.max(card1, card2);
-      
-      if (guess === 'inside') {
-        correct = currentValue > min && currentValue < max;
-      } else { 
-        correct = currentValue < min || currentValue > max;
-      }
-      
-      if (currentValue === min || currentValue === max) {
-        correct = false;
-      }
-      
-      gameHistory = [...gameHistory, {
-        stage: 'In/Out',
-        guess,
-        card: `${currentCard.value}${currentCard.suit}`,
-        correct
-      }];
-      
-      if (correct) {
-        gameMessage = "Correct! Final round: guess the suit";
-        rideTheBusStage = 'suit';
-        potentialWinnings = betAmount * 16; 
-      } else {
-        endGame(false);
-      }
-    } else if (rideTheBusStage === 'suit') {
-      correct = guess === currentCard.suit;
-      
-      gameHistory = [...gameHistory, {
-        stage: 'Suit',
-        guess,
-        card: `${currentCard.value}${currentCard.suit}`,
-        correct
-      }];
-      
-      if (correct) {
-        endGame(true);
-      } else {
-        endGame(false);
-      }
-    }
-  }
-  
-  async function endGame(won) {
-    if (won) {
-      gameMessage = `Congratulations! You won ${potentialWinnings} credits!`;
-      await updateCredits(potentialWinnings);
-      await recordBet('ride_the_bus', betAmount, potentialWinnings, 'won');
-    } else {
-      gameMessage = "Sorry, you lost! Try again?";
-      await updateCredits(-betAmount);
-      await recordBet('ride_the_bus', betAmount, 0, 'lost');
-    }
-    
-    rideTheBusActive = false;
-    rideTheBusStage = 'result';
-  }
-  
-  async function flipCoin() {
+  // Kontrollera inloggning och saldo
   if (!isLoggedIn) {
     gameMessage = "Please log in to place bets.";
     return;
   }
+  if (profile && profile.credits < betAmount) {
+    gameMessage = "Not enough credits for this bet!";
+    return;
+  }
+
+  // Startar spelet
+  rideTheBusActive = true;
+  rideTheBusStage = 'color'; // Första gissningen: färg
+  gameMessage = "Guess the card color (red or black)";
+  busCards = []; // användna kort
+  gameHistory = [];
+  potentialWinnings = betAmount * 2;
+}
+
+function dealNewCard() {
+  // Skapar ett nytt slumpmässigt kort
+  const suits = ["♠️", "♥️", "♦️", "♣️"];
+  const values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+  const suit = suits[Math.floor(Math.random() * suits.length)];
+  const value = values[Math.floor(Math.random() * values.length)];
+  const color = (suit === "♥️" || suit === "♦️") ? "red" : "black";
+  const numValue = values.indexOf(value) + 1;
+
+  previousCard = busCards.length > 0 ? busCards[busCards.length - 1] : null;
+
+  // Lägger till kortet i spelet
+  busCards = [...busCards, { suit, value, color, numValue }];
+  return busCards[busCards.length - 1];
+}
+
+function makeGuess(guess) {
+  // Avbryt om spelet inte är aktivt
+  if (!rideTheBusActive) return;
+
+  currentGuess = guess;
+  let correct = false;
+  const currentCard = dealNewCard(); // Dra ett nytt kort
+
+  // 1 Gissa kulör
+  if (rideTheBusStage === 'color') {
+    correct = guess === currentCard.color;
+    rideTheBusStage = correct ? 'highlow' : endGame(false); // Nästa steg eller avsluta
+    potentialWinnings = correct ? betAmount * 4 : 0;
+    gameMessage = correct 
+      ? "Correct! Now guess if the next card is higher or lower" 
+      : gameMessage;
+
+  // 2 Gissa högre eller lägre än förra kortet
+  } else if (rideTheBusStage === 'highlow') {
+    const prev = busCards[busCards.length - 2].numValue;
+    correct = guess === 'higher' 
+      ? currentCard.numValue > prev 
+      : currentCard.numValue < prev;
+
+    // Om lika, gissningen är fel
+    if (currentCard.numValue === prev) correct = false;
+
+    rideTheBusStage = correct ? 'inout' : endGame(false);
+    potentialWinnings = correct ? betAmount * 8 : 0;
+    gameMessage = correct 
+      ? "Correct! Now guess if the next card is inside or outside the range" 
+      : gameMessage;
+
+  // 3 Gissa om nästa kort är mellan (inside) eller utanför (outside) de två tidigare
+  } else if (rideTheBusStage === 'inout') {
+    const [a, b] = [busCards[busCards.length - 3].numValue, busCards[busCards.length - 2].numValue];
+    const [min, max] = [Math.min(a, b), Math.max(a, b)];
+
+    correct = guess === 'inside' 
+      ? currentCard.numValue > min && currentCard.numValue < max 
+      : currentCard.numValue < min || currentCard.numValue > max;
+
+    // Om kortet har samma värde som gränserna, är det fel
+    if (currentCard.numValue === min || currentCard.numValue === max) correct = false;
+
+    rideTheBusStage = correct ? 'suit' : endGame(false);
+    potentialWinnings = correct ? betAmount * 20 : 0;
+    gameMessage = correct 
+      ? "Correct! Final round: guess the suit" 
+      : gameMessage;
+
+  // 4 Gissa exakt vilken färg det blir
+  } else if (rideTheBusStage === 'suit') {
+    correct = guess === currentCard.suit;
+    endGame(correct); // Spelet avslutas oavsett utfall
+  }
+
+  // Spara varje gissning i historik
+  gameHistory = [...gameHistory, {
+    stage: rideTheBusStage.charAt(0).toUpperCase() + rideTheBusStage.slice(1),
+    guess,
+    card: `${currentCard.value}${currentCard.suit}`,
+    correct
+  }];
+}
+
+async function endGame(won) {
+  // Uppdaterar meddelande, krediter och historik
+  gameMessage = won
+    ? `Congratulations! You won ${potentialWinnings} credits!`
+    : "Sorry, you lost! Try again?";
+  await updateCredits(won ? potentialWinnings : -betAmount);
+  await recordBet('ride_the_bus', betAmount, won ? potentialWinnings : 0, won ? 'won' : 'lost');
+
+  // Avsluta spel
+  rideTheBusActive = false;
+  rideTheBusStage = 'result';
+}
   
+async function flipCoin() {
+  // Kontrollera om användaren är inloggad
+  if (!isLoggedIn) {
+    gameMessage = "Please log in to place bets.";
+    return;
+  }
+
+  // Kontrollera om användaren har tillräckligt med pengar
   if (isLoggedIn && profile && profile.credits < coinBetAmount) {
     gameMessage = "Not enough credits for this bet!";
     return;
   }
-  
-  coinFlipping = true;
-  
+
+  coinFlipping = true; // Indikera att slantsingling pågår
+
   let flips = 0;
-  const maxFlips = 10 + Math.floor(Math.random() * 5);
+  const maxFlips = 10 + Math.floor(Math.random() * 5); // Slumpa antal animationer för rolig animation
+
+  // Starta en timer för att animera slantsingling
   const flipInterval = setInterval(() => {
-    coinSide = Math.random() > 0.5 ? 'heads' : 'tails';
+    coinSide = Math.random() > 0.5 ? 'heads' : 'tails'; // Slumpa sida
     flips++;
-    
+
+    // Avsluta animationen efter tillräckligt många "flippar"
     if (flips >= maxFlips) {
-      clearInterval(flipInterval);
+      clearInterval(flipInterval); // Stoppa intervallet
+
+      // Vänta lite innan resultat visas
       setTimeout(async () => {
         coinFlipping = false;
-        
-        const won = coinSide === coinBetChoice;
-        
+
+        const won = coinSide === coinBetChoice; // Jämför spelarens val med resultatet
+
         if (won) {
           const winnings = coinBetAmount * 2;
           gameMessage = `You guessed ${coinBetChoice}. It's ${coinSide}. You won ${winnings} credits!`;
+
+          // Uppdatera spelarens krediter och spara spelresultat
           if (isLoggedIn && profile) {
             await updateCredits(coinBetAmount);
             await recordBet('coin_flip', coinBetAmount, winnings, 'won');
           }
         } else {
           gameMessage = `You guessed ${coinBetChoice}. It's ${coinSide}. You lost ${coinBetAmount} credits.`;
+
+          // Dra bort krediter och spara spelresultat
           if (isLoggedIn && profile) {
             await updateCredits(-coinBetAmount);
             await recordBet('coin_flip', coinBetAmount, 0, 'lost');
           }
         }
-      }, 500);
+      }, 500); // Fördröjning innan resultat visas för att vänta på animation
     }
-  }, 100);
+  }, 100); // Snabb animation, 100ms per flip
 }
+
   
 async function rollDice() {
   if (!isLoggedIn) {
@@ -362,21 +332,21 @@ async function rollDice() {
         let winnings = 0;
         
         if (diceBetType === 'highlow') {
-          if (diceBetChoice === 'high') {
-            won = diceValue > 3;
+          if (diceBetChoice === 'high') { // Vale high
+            won = diceValue > 3; // Vann om dicevalue är 3 eller högre
             winnings = won ? diceBetAmount * 2 : 0;
-          } else {
-            won = diceValue <= 3;
+          } else { // Valde lågt
+            won = diceValue <= 3; // Van om dicevalue är 3 eller mindre
             winnings = won ? diceBetAmount * 2 : 0;
           }
-        } else { 
+        } else {  // Specefikt nummer
           won = diceValue === parseInt(diceSpecificNumber);
-          winnings = won ? diceBetAmount * 6 : 0;
+          winnings = won ? diceBetAmount * 6 : 0; // 6 gånger pengarna
         }
         
         if (won) {
           gameMessage = `You rolled a ${diceValue}. You won ${winnings} credits!`;
-          if (isLoggedIn && profile) {
+          if (isLoggedIn && profile) { 
             await updateCredits(diceBetAmount); 
             await recordBet('dice_roll', diceBetAmount, winnings, 'won');
           }
@@ -391,14 +361,15 @@ async function rollDice() {
     }
   }, 100);
 }
-    
+
+// Uppdaterar saldot    
 async function updateCredits(amount) {
   if (!isLoggedIn || !profile) {
     return false;
   }
   
   try {
-    const newBalance = profile.credits + amount;
+    const newBalance = profile.credits + amount; // Sätter en nytt salod
     
     const { data, error } = await supabase
       .from('profiles')
@@ -408,7 +379,7 @@ async function updateCredits(amount) {
       
     if (error) throw error;
         
-    profile.credits = newBalance;
+    profile.credits = newBalance; // Ändrar saldot i databasen till min new balance
     return true;
     
   } catch (error) {
@@ -568,17 +539,6 @@ async function recordBet(gameType, amount, winnings, status) {
           </div>
         </div>
       </div>
-    {:else}
-      <div class="guest-mode-notice">
-        <div class="guest-icon">👤</div>
-        <div class="guest-content">
-          <p>Playing in guest mode. Your progress won't be saved!</p>
-          <div class="guest-actions">
-            <a href="/login" class="login-button">Log In</a>
-            <a href="/signup" class="signup-button">Sign Up</a>
-          </div>
-        </div>
-      </div>
     {/if}
   </div>
   
@@ -614,7 +574,7 @@ async function recordBet(gameType, amount, winnings, status) {
           <li><strong>Round 2:</strong> Guess if the next card is higher or lower than the previous card</li>
           <li><strong>Round 3:</strong> Guess if the next card is inside or outside the range of the previous two cards</li>
           <li><strong>Round 4:</strong> Guess the suit of the next card (♠️, ♥️, ♦️, ♣️)</li>
-          <li>Win all rounds to 16x your stake</li>
+          <li>Win all rounds to 20x your stake</li>
         </ul>
       {:else if activeGame === 'coinflip'}
         <h3>Coin Flip Rules</h3>
@@ -1065,41 +1025,6 @@ async function recordBet(gameType, amount, winnings, status) {
     border-radius: 0.375rem;
   }
   
-  /* Guest Mode Styles */
-  .guest-mode-notice {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    padding: 0.5rem;
-  }
-  
-  .guest-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    background: #f1f5f9;
-    color: #64748b;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-  }
-  
-  .guest-content {
-    flex: 1;
-  }
-  
-  .guest-content p {
-    color: #64748b;
-    margin: 0 0 0.5rem 0;
-    font-size: 0.875rem;
-  }
-  
-  .guest-actions {
-    display: flex;
-    gap: 1rem;
-  }
-  
   .login-button, .signup-button {
     padding: 0.375rem 1rem;
     border-radius: 0.375rem;
@@ -1140,11 +1065,6 @@ async function recordBet(gameType, amount, winnings, status) {
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-    }
-    
-    .guest-actions {
-      flex-direction: column;
-      gap: 0.5rem;
     }
     
     .login-button, .signup-button {
@@ -1786,26 +1706,6 @@ async function recordBet(gameType, amount, winnings, status) {
   .rolling .dice {
     animation: roll 0.3s linear infinite;
   }
-
-  .guest-mode-notice {
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
-  text-align: center;
-  color: #64748b;
-}
-
-.guest-mode-notice a {
-  color: #3b82f6;
-  font-weight: 500;
-  text-decoration: none;
-}
-
-.guest-mode-notice a:hover {
-  text-decoration: underline;
-}
   
   @keyframes roll {
     0% { transform: rotate(0deg); }
