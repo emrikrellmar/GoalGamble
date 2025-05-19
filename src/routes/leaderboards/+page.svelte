@@ -3,13 +3,13 @@
 </svelte:head>
 
 <script>
-  import { onMount } from 'svelte';
+  import { onMount } from 'svelte'; // Mycket kod hämtad från komponenten leaderboard, hade kunnat göra det bättre och inte behövt skriva om koden
   import { supabase } from '$lib/supabase';
   
   let creditLeaders = [];
   let winLeaders = [];
   let betLeaders = [];
-  let loading = true;
+  let loading = true; 
   let error = null;
   
   const limit = 5;

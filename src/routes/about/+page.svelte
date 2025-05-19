@@ -2,8 +2,8 @@
   <title>About - GoalGamble</title>
 </svelte:head>
 
-<div class="about-container">
-  <div class="content-section">
+<div class="about-container"> <!-- About sida som handlar om projektet och mig -->
+  <div class="content-section"> 
     <div class="about-card creator">
       <h2>About the Creator</h2>
       <div class="creator-content">

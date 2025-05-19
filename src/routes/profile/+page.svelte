@@ -6,6 +6,8 @@
   import { onMount } from 'svelte';
   import { supabase } from '$lib/supabase';
 
+  // Håller användarens profildata, kontrollerar laddningstillstånd, lagrar eventuella felmeddelanden, styr visning av redigeringsformulär för profil,
+  // håller det nya användarnamnet vid redigering och indikerar om sparande pågår
   let profile = null;
   let loading = true;
   let error = null;
@@ -15,29 +17,34 @@
 
 onMount(async () => {
   try {
+    // Hämtar inloggad användare från Supabase Auth
     const { data: { user } } = await supabase.auth.getUser();
     
+    // Kontrollerar om användaren är autentiserad
     if (!user) throw new Error("Not authenticated");
     
+    // Försöker hämta användarens profil från profiles-tabellen
     let { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', user.id)
       .single();
 
+    // Om profilen inte hittas, skapa en ny
     if (profileError && profileError.code === 'PGRST116') {
       console.log("Profile not found, creating one...");
       
       const defaultUsername = user.user_metadata?.username || 
       `User${user.id.substring(0, 6)}`;
                              
+      // Skapar en ny profilpost i databasen
       const { data: newProfile, error: insertError } = await supabase
         .from('profiles')
         .insert({
           id: user.id,
           username: defaultUsername,
           email: user.email,
-          credits: 1000,
+          credits: 1000, // Startar med 1000 krediter
           total_bets: 0,
           total_wins: 0
         })
@@ -47,6 +54,7 @@ onMount(async () => {
       if (insertError) throw insertError;
       profileData = newProfile;
       
+      // Uppdaterar användarens metadata med användarnamnet
       await supabase.auth.updateUser({
         data: { username: defaultUsername }
       });
@@ -54,6 +62,7 @@ onMount(async () => {
       throw profileError;
     }
     
+    // Lagrar profildata och initialiserar redigeringsvariabel
     profile = profileData;
     editUsername = profile.username;
 
@@ -65,14 +74,17 @@ onMount(async () => {
   }
 });
 
+// Funktion för att spara ändringar i användarprofilen
 async function saveProfile() {
   if (!editUsername.trim() || editUsername === profile.username) {
     showEditProfile = false;
     return;
   }
 
+  // Sätter sparandetillstånd
   isSaving = true;
   try {
+    // Uppdaterar användarnamn i profiles-tabellen
     const { error: updateError } = await supabase
       .from('profiles')
       .update({ username: editUsername })
@@ -111,11 +123,13 @@ async function saveProfile() {
   {:else}
     <div class="profile-header">
       <div class="profile-info">
+        <!-- Enkel avatar för användaren som visar första bokstaven i användarnamnet -->
         <div class="avatar">
           {profile.username[0].toUpperCase()}
         </div>
         <div class="user-details">
           {#if showEditProfile}
+            <!-- Redigerings ruta för användarnamn -->
             <div class="edit-profile">
               <input 
                 type="text" 
@@ -142,6 +156,7 @@ async function saveProfile() {
               </div>
             </div>
           {:else}
+            <!-- Visning av användarnamn med redigeringsknapp -->
             <h1>
               {profile.username}
               <button 
@@ -152,12 +167,15 @@ async function saveProfile() {
               </button>
             </h1>
           {/if}
+          <!-- Visar medlemskapstid och e-post -->
           <p class="member-since">Member since {new Date(profile.created_at).toLocaleDateString()}</p>
           <p class="email">{profile.email}</p>
         </div>
       </div>
 
+      <!-- Statistiksektion med användarens data -->
       <div class="stats-overview">
+        <!-- Visar användarens kreditsaldo -->
         <div class="stat-card primary">
           <span class="stat-icon">💰</span>
           <div class="stat-content">
@@ -166,6 +184,7 @@ async function saveProfile() {
           </div>
         </div>
         
+        <!-- Visar totalt antal vad användaren har lagt -->
         <div class="stat-card">
           <span class="stat-icon">🎲</span>
           <div class="stat-content">
@@ -174,6 +193,7 @@ async function saveProfile() {
           </div>
         </div>
         
+        <!-- Visar vinstprocent med beräkning -->
         <div class="stat-card">
           <span class="stat-icon">📈</span>
           <div class="stat-content">
@@ -191,12 +211,15 @@ async function saveProfile() {
  {/if}
 </div>
 
+<!-- Prestationssektion som visar användarens uppnådda bedrifter -->
 <div class="achievements-section">
   <h2 class="section-title">Betting Achievements</h2>
   
   <div class="achievements-grid">
     {#if !loading && profile}
+      <!-- Lista med prestationer som användaren kan låsa upp -->
       {#each [
+        // Grundläggande prestation för att skapa konto
         {
           id: 'first_steps',
           title: 'First Steps',
@@ -207,6 +230,7 @@ async function saveProfile() {
           unlocked: true,
           type: 'account'
         },
+        // Prestation för att samla 5000 krediter
         {
           id: 'stacking_up',
           title: 'Stacking Up',
@@ -217,6 +241,7 @@ async function saveProfile() {
           unlocked: (profile.credits || 0) >= 5000,
           type: 'performance'
         },
+        // Prestation för att samla 10000 krediter
         {
           id: 'high_roller',
           title: 'High Roller',
@@ -227,6 +252,7 @@ async function saveProfile() {
           unlocked: (profile.credits || 0) >= 10000,
           type: 'wealth'
         },
+        // Prestation för första vadet
         {
           id: 'first_bet',
           title: 'First Bet',
@@ -237,6 +263,7 @@ async function saveProfile() {
           unlocked: (profile.total_bets || 0) >= 1,
           type: 'betting'
         },
+        // Prestation för att vinna 25 vad
         {
           id: 'prediction_expert',
           title: 'Prediction Expert',
@@ -247,6 +274,7 @@ async function saveProfile() {
           unlocked: (profile.total_wins || 0) >= 25,
           type: 'betting'
         },
+        // Prestation för att lägga 100 vad
         {
           id: 'bet_master',
           title: 'Master Better',
@@ -258,6 +286,7 @@ async function saveProfile() {
           type: 'betting'
         }
       ] as achievement}
+        <!-- Kort som visar varje prestation med framsteg -->
         <div class="achievement-card" class:unlocked={achievement.unlocked}>
           <div class="achievement-icon">
             <span class="icon">{achievement.icon}</span>
@@ -270,6 +299,7 @@ async function saveProfile() {
             <h3>{achievement.title}</h3>
             <p>{achievement.description}</p>
             
+            <!-- Framstegsindikator som visar hur nära användaren är att uppnå prestationen -->
             <div class="progress-bar">
               <div 
                 class="progress" 

@@ -3,7 +3,7 @@
 </svelte:head>
 
     <body>
-        <div class="policy-content">
+        <div class="policy-content"> <!-- Privacy sida, :D-->
             <section class="policy-section">
                 <h1>Privacy Policy</h1>
     
