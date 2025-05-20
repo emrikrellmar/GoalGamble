@@ -39,6 +39,6 @@ export const handle = async ({ event, resolve }) => {
         }
     }
 
-    // Fortsätter med förfrågans bearbetning efter autentiseringskontroll
+    // Fortsätter med förfrågan efter autentiseringskontroll
     return resolve(event);
 };

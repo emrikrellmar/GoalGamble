@@ -1,6 +1,6 @@
 <svelte:head>
   <title>Terms - GoalGamble</title>
-</svelte:head> 
+</svelte:head> <!-- Terms of service sida för syns skull :D-->
 
     <body>
         <div class="terms-content"> 

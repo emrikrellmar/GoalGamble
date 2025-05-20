@@ -3,9 +3,12 @@
 </svelte:head>
 
 <script>
+    // Kontrollerar vilken flik som visas
     let activeTab = 'tips';
+    // Styr om alla eller bara några FAQs visas
     let showAllFAQs = false;
     
+    // Lista med vanliga frågor och svar
     const faqs = [
       {
         question: "How can I keep my gambling habits healthy?",
@@ -25,6 +28,7 @@
       }
     ];
   
+    // Frågor för självbedömning
     const assessmentQuestions = [
       "Do you spend more time gambling than initially planned?",
       "Do you often try to win back lost bets?",
@@ -33,10 +37,12 @@
       "Have you tried to cut down on gambling but couldn't?"
     ];
   
+    // Byter aktiv flik
     function setActiveTab(tab) {
       activeTab = tab;
     }
   
+    // Växlar mellan att visa alla eller färre FAQs
     function toggleFAQs() {
       showAllFAQs = !showAllFAQs;
     }
@@ -44,6 +50,7 @@
   
   <div class="responsible-gambling">
   
+    <!-- Navigation mellan flikar -->
     <div class="nav-tabs">
       <button 
         class="tab-button {activeTab === 'tips' ? 'active' : ''}"
@@ -64,6 +71,7 @@
   
     <div class="content-section">  
       {#if activeTab === 'tips'}
+        <!-- Tips för ansvarsfullt spelande -->
         <div class="tab-content">
           <div class="tips-section">
             <h2>Responsible Gambling Tips</h2>
@@ -103,6 +111,7 @@
         </div>
   
       {:else if activeTab === 'assessment'}
+        <!-- Självbedömning av spelvanor -->
         <div class="tab-content">
           <div class="assessment-section">
             <h2>Self-Assessment Checklist</h2>
@@ -139,6 +148,7 @@
         </div>
   
       {:else if activeTab === 'faq'}
+        <!-- Vanliga frågor och svar -->
         <div class="tab-content">
           <div class="faq-section">
             <h2>Frequently Asked Questions</h2>
@@ -152,6 +162,7 @@
               {/each}
             </div>
   
+            <!-- Visar/döljer fler FAQs om det finns fler än 3 -->
             {#if faqs.length > 3}
               <button class="show-more-btn" on:click={toggleFAQs}>
                 {showAllFAQs ? 'Show Less' : 'Show More'}
@@ -162,13 +173,14 @@
       {/if}
     </div>
   
+    <!-- Sektion med hjälpresurser -->
     <div class="help-section">
         <h2>Need Help?</h2>
         <p>
           If you're concerned about your gambling habits, even with virtual credits,
           we encourage you to talk to someone. 
         </p>
-        <div class="help-links">
+        <div class="help-links"> <!-- Länk till hjälplinjen -->   
           <a 
             href="https://findahelpline.com/organizations/stodlinjen-for-spelare-och-anhoriga-the-swedish-national-gambling-helpline" 
             class="help-link"
@@ -437,7 +449,6 @@
       transform: translateY(-1px);
     }
   
-    /* Responsive Styles */
     @media (max-width: 768px) {
       .responsible-gambling {
         padding: 1rem;

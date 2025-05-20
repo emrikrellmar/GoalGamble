@@ -1,31 +1,40 @@
 <script>
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import { supabase } from '$lib/supabase';
+  // Importerar nödvändiga funktioner och moduler
+  import { goto } from '$app/navigation';  // För navigering efter inloggning
+  import { page } from '$app/stores';      // För att komma åt URL-parametrar
+  import { supabase } from '$lib/supabase'; // Supabase-klient för autentisering
   
-  let email = '';
-  let password = '';
-  let loading = false;
-  let error = null;
+  // Reaktiva variabler för formulärhantering
+  let email = '';       
+  let password = '';    
+  let loading = false;  
+  let error = null;     
   
+  // Reaktiv variabel som kontrollerar om användaren kommer från registreringssidan, detta används för att visa ett välkomstmeddelande
   $: fromSignup = $page.url.searchParams.get('from') === 'signup';
   
+  
+   // Hanterar inloggningsprocessen när formuläret skickasAnvänder Supabase för autentisering och hanterar resultat
   async function handleLogin() {
     try {
+      // Aktiverar laddningstillstånd 
       loading = true;
       error = null;
       
+      // Anropar Supabase API för inloggning med e-post och lösenord
       const { data, error: loginError } = await supabase.auth.signInWithPassword({
         email,
         password
       });
       
+      // Om inloggningen misslyckas, kasta felet för att fånga det i catch-blocket
       if (loginError) throw loginError;
       
       goto('/');
       
     } catch (e) {
       console.error('Login error:', e);
+      // Visa felmeddelandet för användaren
       error = e.message;
     } finally {
       loading = false;
@@ -42,6 +51,7 @@
     <div class="login-box">
       <h1>Log In</h1>
       
+            <!-- Villkorligt block som visar ett välkomstmeddelande om användaren kommer från registreringssidan -->
       {#if fromSignup}
         <div class="success-message">
           Account created successfully! Please log in.
@@ -49,6 +59,7 @@
       {/if}
       
       <form on:submit|preventDefault={handleLogin}>
+    <!-- Villkorligt block som visar felmeddelande om det finns något -->
         {#if error}
           <div class="error-message">
             {error}
@@ -82,10 +93,11 @@
             />
           </div>
           
+          <!-- Disablear flera tryck medans laddning -->
           <button 
             type="submit" 
-            disabled={loading}
-            class:loading={loading}
+            disabled={loading} 
+            class:loading={loading} 
           >
             {loading ? 'Logging in...' : 'Log In'}
           </button>

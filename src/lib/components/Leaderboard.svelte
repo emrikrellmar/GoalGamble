@@ -18,7 +18,7 @@
           .select('username, credits, total_bets, total_wins')
           .order(sortBy, { ascending: false })
           .limit(limit);
-        
+ 
         if (queryError) throw queryError;
         
         leaderboardData = data;
@@ -29,7 +29,7 @@
       }
     });
     
-    function calculateWinRate(totalWins, totalBets) {
+    function calculateWinRate(totalWins, totalBets) { // Räknar ut vinprocent
       if (!totalBets) return '0%';
       return ((totalWins / totalBets) * 100).toFixed(1) + '%';
     }
@@ -65,7 +65,7 @@
           {#each leaderboardData as user, index}
             <tr class={index === 0 ? 'top-ranked' : ''}>
               <td class="rank">
-                {#if index === 0}
+                {#if index === 0} <!-- Om första plats får man en krona som symbol -->
                   <span class="crown">👑</span>
                 {:else}
                   #{index + 1}
@@ -74,7 +74,7 @@
               <td class="username">{user.username}</td>
               <td class="credits">{user.credits.toLocaleString()}</td>
               <td class="win-rate">
-                {calculateWinRate(user.total_wins || 0, user.total_bets || 0)}
+                {calculateWinRate(user.total_wins || 0, user.total_bets || 0)} <!--Räknar ut vinprocent på de på leaderboard-->
               </td>
             </tr>
           {/each}

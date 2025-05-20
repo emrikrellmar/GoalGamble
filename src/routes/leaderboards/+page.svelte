@@ -3,21 +3,25 @@
 </svelte:head>
 
 <script>
-  import { onMount } from 'svelte'; // Mycket kod hämtad från komponenten leaderboard, hade kunnat göra det bättre och inte behövt skriva om koden
+  import { onMount } from 'svelte'; // För att köra kod när komponenten har laddats
   import { supabase } from '$lib/supabase';
   
+  // Variabler för de tre olika leaderboards
   let creditLeaders = [];
   let winLeaders = [];
   let betLeaders = [];
   let loading = true; 
   let error = null;
   
+  // Begränsar antalet resultat i varje leaderboard
   const limit = 5;
   
+  // Körs när komponenten har renderats
   onMount(async () => {
     try {
       loading = true;
       
+      // Hämtar topplista baserad på credits
       const { data: creditsData, error: creditsError } = await supabase
         .from('profiles')
         .select('username, credits, total_bets, total_wins')
@@ -27,6 +31,7 @@
       if (creditsError) throw creditsError;
       creditLeaders = creditsData;
       
+      // Hämtar topplista baserad på vinster
       const { data: winsData, error: winsError } = await supabase
         .from('profiles')
         .select('username, credits, total_bets, total_wins')
@@ -36,6 +41,7 @@
       if (winsError) throw winsError;
       winLeaders = winsData;
       
+      // Hämtar topplista baserad på antal satsningar
       const { data: betsData, error: betsError } = await supabase
         .from('profiles')
         .select('username, credits, total_bets, total_wins')
@@ -46,16 +52,19 @@
       betLeaders = betsData;
       
     } catch (e) {
+      // Felhantering (tom i originalkoden)
     } finally {
       loading = false;
     }
   });
   
+  // Beräknar vinstprocent
   function calculateWinRate(totalWins, totalBets) {
     if (!totalBets) return '0%';
     return ((totalWins / totalBets) * 100).toFixed(1) + '%';
   }
   
+  // Formaterar nummer med tusentalsavgränsare
   function formatNumber(number) {
     return number?.toLocaleString() || '0';
   }
@@ -68,17 +77,21 @@
   </div>
   
   {#if loading}
+    <!-- Laddningsindikator -->
     <div class="loading-state">
       <div class="spinner"></div>
       <p>Loading leaderboards...</p>
     </div>
   {:else if error}
+    <!-- Felmeddelande -->
     <div class="error-message">
       <p>Error loading leaderboards: {error}</p>
       <p>Please try again later or <a href="/login">log in</a> if you haven't already.</p>
     </div>
   {:else}
+    <!-- Visar de tre topplistorna i ett rutnät -->
     <div class="leaderboards-grid">
+      <!-- Topplista för credits -->
       <div class="leaderboard-card">
         <div class="leaderboard-title">
           <h2>Most Credits</h2>
@@ -117,6 +130,7 @@
         {/if}
       </div>
       
+      <!-- Topplista för vinster -->
       <div class="leaderboard-card">
         <div class="leaderboard-title">
           <h2>Most Wins</h2>
@@ -155,6 +169,7 @@
         {/if}
       </div>
       
+      <!-- Topplista för aktivitet (antal satsningar) -->
       <div class="leaderboard-card">
         <div class="leaderboard-title">
           <h2>Most Active</h2>
@@ -179,7 +194,7 @@
                 <tr class={index === 0 ? 'top-ranked' : ''}>
                   <td class="rank">
                     {#if index === 0}
-                      <span class="crown">👑</span>
+                      <span class="crown">👑</span> <!-- Krona ifall första plats -->
                     {:else}
                       #{index + 1}
                     {/if}

@@ -82,7 +82,7 @@ import { onMount } from 'svelte';
       {/if}
     </button>
 
-    <div class="desktop-nav">
+    <div class="desktop-nav"> <!-- Vanliga menyn för desktop-->
       {#if $authStore.user}
         <a href="/bet" class="nav-link">Bet</a>
         <a href="/leaderboards" class="nav-link">Leaderboards</a>
@@ -100,7 +100,7 @@ import { onMount } from 'svelte';
     </div>
 
     <div class="mobile-menu" class:mobile-menu-open={mobileMenuOpen} 
-         transition:fade={{ duration: 200 }}>
+         transition:fade={{ duration: 200 }}> <!-- Mobil meny -->
       {#if $authStore.user}
         <a href="/bet" class="mobile-link">Bet</a>
         <a href="/educational" class="mobile-link">Educational</a>

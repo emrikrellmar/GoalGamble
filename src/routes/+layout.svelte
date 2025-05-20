@@ -1,22 +1,27 @@
 <script>
-  import { onMount } from 'svelte';
-  import { supabase } from '$lib/supabase';
-  import { authStore } from '$lib/stores/auth';
-  import Header from '$lib/components/Header.svelte';
-  import Footer from '$lib/components/Footer.svelte';
+  import { onMount } from 'svelte'; // Importerar
+  import { supabase } from '$lib/supabase';  
+  import { authStore } from '$lib/stores/auth';  
+  import Header from '$lib/components/Header.svelte';  
+  import Footer from '$lib/components/Footer.svelte';  
 
+  // Spårar om komponenten fortfarande laddar
   let isLoading = true;
-
+  
   onMount(async () => {
+    // Hämtar befintlig session vid sidladdning
     const { data } = await supabase.auth.getSession();
     
+    // Uppdaterar auth store med användardata eller null om ej inloggad
     authStore.set({
       user: data.session?.user || null,
       loading: false
     });
     
+    // Markerar komponenten som färdigladdad
     isLoading = false;
     
+    // Prenumererar på auth-förändringar (inloggning/utloggning)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       authStore.set({
         user: session?.user || null,
@@ -24,6 +29,7 @@
       });
     });
     
+    // Städar upp prenumerationen när komponenten förstörs
     return () => {
       subscription?.unsubscribe();
     };
@@ -33,19 +39,19 @@
 <div class="app-wrapper">
   <div class="app-content">
     <header>
-      <Header />
+      <Header /> <!-- Importerar header komponent -->
     </header> 
 
     <main>
       {#if isLoading}
-        <div class="loading">Loading...</div>
+        <div class="loading">Loading </div> <!-- Laddning ifall isLoading = true, om inte supabase kan connecta -->
       {:else}
         <slot />
       {/if}
     </main>
   </div>
 
-  <Footer />
+  <Footer /> <!-- Importerar Footer komponent -->
 </div>
 
 <style>

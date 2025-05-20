@@ -369,7 +369,7 @@ async function updateCredits(amount) {
   }
   
   try {
-    const newBalance = profile.credits + amount; // Sätter en nytt salod
+    const newBalance = profile.credits + amount; // Sätter en nytt saldo
     
     const { data, error } = await supabase
       .from('profiles')
