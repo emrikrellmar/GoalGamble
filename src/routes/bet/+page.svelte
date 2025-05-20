@@ -397,10 +397,10 @@ async function rollDice() {
   
 /**
  * Registrerar ett vad i databasen och uppdaterar spelarstatistik
- * @param {string} gameType - Typ av spel (t.ex. 'ride_the_bus', 'coin_flip', 'dice_roll')
- * @param {number} amount - Satsningens belopp
- * @param {number} winnings - Potentiell vinst (ges bara om status är 'won')
- * @param {string} status - Status för vadet ('won' eller 'lost')
+ * @param {string} gameType - Typ av spel 
+ * @param {number} amount - belopp
+ * @param {number} winnings - Potentiell vinst om status won
+ * @param {string} status - Status för vadet, won eller lost
  * @returns {boolean} - True om det lyckades registrera vadet, annars false
  */
 async function recordBet(gameType, amount, winnings, status) {
