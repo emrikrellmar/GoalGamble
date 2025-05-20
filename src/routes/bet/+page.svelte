@@ -363,14 +363,21 @@ async function rollDice() {
 }
 
 // Uppdaterar saldot    
-async function updateCredits(amount) {
+/**
+ * Uppdaterar användarens kreditsaldo i databasen
+ * @param {number} amount - Beloppet att ändra (positivt för att lägga till, negativt för att dra av)
+ * @returns {boolean} - True om uppdateringen lyckades, annars false
+ */
+ async function updateCredits(amount) {
   if (!isLoggedIn || !profile) {
     return false;
   }
   
   try {
-    const newBalance = profile.credits + amount; // Sätter en nytt saldo
+    // Beräknar nytt saldo
+    const newBalance = profile.credits + amount;
     
+    // Uppdaterar saldot i databasen
     const { data, error } = await supabase
       .from('profiles')
       .update({ credits: newBalance })
@@ -379,7 +386,8 @@ async function updateCredits(amount) {
       
     if (error) throw error;
         
-    profile.credits = newBalance; // Ändrar saldot i databasen till min new balance
+    // Uppdaterar lokalt profil-objekt
+    profile.credits = newBalance;
     return true;
     
   } catch (error) {
@@ -387,12 +395,21 @@ async function updateCredits(amount) {
   }
 }
   
+/**
+ * Registrerar ett vad i databasen och uppdaterar spelarstatistik
+ * @param {string} gameType - Typ av spel (t.ex. 'ride_the_bus', 'coin_flip', 'dice_roll')
+ * @param {number} amount - Satsningens belopp
+ * @param {number} winnings - Potentiell vinst (ges bara om status är 'won')
+ * @param {string} status - Status för vadet ('won' eller 'lost')
+ * @returns {boolean} - True om det lyckades registrera vadet, annars false
+ */
 async function recordBet(gameType, amount, winnings, status) {
   if (!isLoggedIn || !profile) {
     return false;
   }
   
   try {
+    // Skapa objekt för vadet som ska sparas
     const betRecord = {
       user_id: profile.id,
       game_type: gameType,
@@ -401,17 +418,21 @@ async function recordBet(gameType, amount, winnings, status) {
       status: status
     };
     
+    // Sätt match_id till null för spel som inte är kopplade till matcher
     if (gameType !== 'ride_the_bus' && gameType !== 'coin_flip' && gameType !== 'dice_roll') {
       betRecord.match_id = null;
     }
         
     try {
+      // Hämta nuvarande statistik
       const currentTotalBets = profile.total_bets || 0;
       const currentTotalWins = profile.total_wins || 0;
       
+      // Uppdatera statistiken
       const newTotalBets = currentTotalBets + 1;
       const newTotalWins = status === 'won' ? currentTotalWins + 1 : currentTotalWins;
       
+      // Spara uppdaterad statistik till databasen
       const { data: updatedProfile, error: statsError } = await supabase
         .from('profiles')
         .update({
@@ -425,7 +446,7 @@ async function recordBet(gameType, amount, winnings, status) {
         return true; 
       }
       
-      
+      // Uppdatera lokalt profil-objekt
       profile.total_bets = newTotalBets;
       profile.total_wins = newTotalWins;
       
@@ -438,74 +459,10 @@ async function recordBet(gameType, amount, winnings, status) {
     return false;
   }
 }
-  
-  function placeBet(matchId, betType) {
-    if (!isLoggedIn) {
-      gameMessage = "Please log in to place a bet on matches.";
-      return;
-    }
-    
-    if (profile) {
-      const match = matches.find(m => m.id === matchId);
-      if (!match) {
-        gameMessage = "Match not found.";
-        return;
-      }
-
-      let odds = 0;
-      if (betType === 'home') {
-        odds = match.home_odds;
-      } else if (betType === 'draw') {
-        odds = match.draw_odds;
-      } else if (betType === 'away') {
-        odds = match.away_odds;
-      }
-
-      const betAmountForMatch = 100;
-
-      if (profile.credits < betAmountForMatch) {
-        gameMessage = "You don't have enough credits for this bet.";
-        return;
-      }
-
-      const potentialWin = Math.round(betAmountForMatch * odds);
-
-      try {
-        const { error } = supabase
-          .from('bets')
-          .insert({
-            user_id: profile.id,
-            match_id: matchId,
-            bet_on: betType,
-            amount: betAmountForMatch,
-            potential_win: potentialWin,
-            status: 'pending',
-            created_at: new Date().toISOString()
-          });
-
-        if (error) throw error;
-
-        updateCredits(-betAmountForMatch);
-
-        gameMessage = `Bet placed successfully! Potential win: ${potentialWin} credits.`;
-
-        const { data: updatedBets } = supabase
-          .from('bets')
-          .select('*, matches(*)')
-          .eq('user_id', profile.id)
-          .eq('status', 'pending')
-          .order('created_at', { ascending: false });
-
-        if (updatedBets) {
-          pendingBets = updatedBets;
-        }
-      } catch (error) {
-      }
-    }
-  }
 </script>
 
 <div class="bet-page">
+  <!-- Profil-information visas överst på sidan -->
   <div class="profile-bar">
     {#if isLoggedIn && profile}
       <div class="user-info-container">
@@ -542,6 +499,7 @@ async function recordBet(gameType, amount, winnings, status) {
     {/if}
   </div>
   
+  <!-- Navigationsflikar för att välja spel -->
   <div class="game-tabs">
     <button 
       class="tab-button {activeGame === 'ridethebus' ? 'active' : ''}"
@@ -565,6 +523,7 @@ async function recordBet(gameType, amount, winnings, status) {
     </button>
   </div>
   
+  <!-- Regler för spelen visas när användaren klickar på Show Rules -->
   {#if showRules}
     <div class="rules-panel">
       {#if activeGame === 'ridethebus'}
@@ -594,12 +553,15 @@ async function recordBet(gameType, amount, winnings, status) {
     </div>
   {/if}
 
+  <!-- Huvudinnehåll för det aktiva spelet -->
   <div class="game-content">    
     {#if activeGame === 'ridethebus'}
+      <!-- Ride the Bus-spel -->
       <div class="ridethebus-section">
         <h2>Ride the Bus</h2>
         
         {#if !rideTheBusActive && rideTheBusStage === 'start'}
+          <!-- Inställningar innan spelet startar -->
           <div class="game-setup">            
             <div class="bet-setup">
               <label for="busbet">Your bet amount:</label>
@@ -620,7 +582,9 @@ async function recordBet(gameType, amount, winnings, status) {
             </div>
           </div>
         {:else if rideTheBusActive || rideTheBusStage === 'result'}
+          <!-- Spelplan när spelet är aktivt eller visar resultat -->
           <div class="game-board">
+            <!-- Indikator för aktuell spelrunda -->
             <div class="game-status">
               <div class="stage-indicator">
                 <div class="stage {rideTheBusStage === 'color' || rideTheBusStage === 'result' && gameHistory.length >= 1 ? 'active' : ''}">Color</div>
@@ -637,6 +601,7 @@ async function recordBet(gameType, amount, winnings, status) {
               </div>
             </div>
             
+            <!-- Visar korten som dragits -->
             <div class="cards-display">
               {#each busCards as card, i}
                 <div class="card {card.color}">
@@ -651,6 +616,7 @@ async function recordBet(gameType, amount, winnings, status) {
             </div>
             
             {#if rideTheBusActive}
+              <!-- Knappar för att göra gissningar baserat på aktuell spelrunda -->
               <div class="guess-controls">
                 {#if rideTheBusStage === 'color'}
                   <button class="guess-button red" on:click={() => makeGuess('red')}>Red</button>
@@ -672,6 +638,7 @@ async function recordBet(gameType, amount, winnings, status) {
               <button class="start-button" on:click={resetGames}>Play Again</button>
             {/if}
             
+            <!-- Spelhistorik visas efter att spelet börjat -->
             {#if gameHistory.length > 0}
               <div class="game-history">
                 <h3>Game History</h3>
@@ -704,10 +671,12 @@ async function recordBet(gameType, amount, winnings, status) {
       </div>
       
     {:else if activeGame === 'coinflip'}
+      <!-- Coin Flip-spel -->
       <div class="coinflip-section">
         <h2>Coin Flip</h2>
         
         <div class="game-board">
+            <!-- Visuell representation av myntet -->
             <div class="coin-display {coinFlipping ? 'flipping' : ''}">
                 {#if coinSide === 'heads'}
                   <div class="coin heads">
@@ -744,6 +713,7 @@ async function recordBet(gameType, amount, winnings, status) {
             {gameMessage}
           </div>
           
+          <!-- Kontroller för att placera vad -->
           <div class="bet-controls">
             <div class="bet-amount">
               <label for="coinbet">Bet Amount:</label>
@@ -757,6 +727,7 @@ async function recordBet(gameType, amount, winnings, status) {
               />
             </div>
             
+            <!-- Knappar för att välja krona eller klave -->
             <div class="bet-choice">
               <button 
                 class="choice-button {coinBetChoice === 'heads' ? 'selected' : ''}" 
@@ -785,10 +756,12 @@ async function recordBet(gameType, amount, winnings, status) {
       </div>
       
     {:else if activeGame === 'diceroll'}
+      <!-- Dice Roll-spel -->
       <div class="diceroll-section">
         <h2>Dice Roll</h2>
         
         <div class="game-board">
+          <!-- Visuell representation av tärningen -->
           <div class="dice-display {diceRolling ? 'rolling' : ''}">
             <div class="dice">
               {#if diceValue === 1}
@@ -826,6 +799,7 @@ async function recordBet(gameType, amount, winnings, status) {
             {gameMessage}
           </div>
           
+          <!-- Kontroller för att placera vad -->
           <div class="bet-controls">
             <div class="bet-amount">
               <label for="dicebet">Bet Amount:</label>
@@ -839,6 +813,7 @@ async function recordBet(gameType, amount, winnings, status) {
               />
             </div>
             
+            <!-- Val av satsningstyp (hög/låg eller exakt nummer) -->
             <div class="bet-type-choice">
               <button 
                 class="type-button {diceBetType === 'highlow' ? 'selected' : ''}" 
@@ -856,6 +831,7 @@ async function recordBet(gameType, amount, winnings, status) {
               </button>
             </div>
             
+            <!-- Dynamiska val baserat på vald satsningstyp -->
             {#if diceBetType === 'highlow'}
               <div class="bet-choice">
                 <button 
