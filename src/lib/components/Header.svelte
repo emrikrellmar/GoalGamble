@@ -65,7 +65,7 @@ import { onMount } from 'svelte';
 
 <nav class="navbar">
   <div class="nav-content">
-    <a href="/" class="logo">Goal fumble<span class="logo-dot">.</span></a>
+    <a href="/" class="logo">GoalGamble<span class="logo-dot">.</span></a>
 
     <button class="menu-button" on:click|stopPropagation={toggleMobileMenu} aria-label="Toggle menu">
       {#if mobileMenuOpen}
