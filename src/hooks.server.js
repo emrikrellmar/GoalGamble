@@ -1,3 +1,5 @@
+// En hooks.server.js fil i SvelteKit är en server-side middleware som körs före varje request till min applikation. 
+// Den fungerar som en mellanhand som kan modifiera requests och responses.
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { createClient } from '@supabase/supabase-js';
 import { redirect } from '@sveltejs/kit';

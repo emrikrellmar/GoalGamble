@@ -13,7 +13,7 @@ import { onMount } from 'svelte';
     }
   }
   
-  async function fetchUsername(userId) {
+  async function fetchUsername(userId) { // Hämtar usernamew
     const { data } = await supabase
       .from('profiles')
       .select('username')

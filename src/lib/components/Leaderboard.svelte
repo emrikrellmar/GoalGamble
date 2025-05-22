@@ -19,7 +19,7 @@
           .order(sortBy, { ascending: false })
           .limit(limit);
  
-        if (queryError) throw queryError;
+        if (queryError) throw queryError; 
         
         leaderboardData = data;
       } catch (e) {
@@ -29,7 +29,7 @@
       }
     });
     
-    function calculateWinRate(totalWins, totalBets) { // Räknar ut vinprocent
+    function calculateWinRate(totalWins, totalBets) { // Räknar ut vinstprocent
       if (!totalBets) return '0%';
       return ((totalWins / totalBets) * 100).toFixed(1) + '%';
     }

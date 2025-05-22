@@ -1,3 +1,4 @@
+// Körs på klienten 
 import { writable } from 'svelte/store';
 
 export const authStore = writable({ // AUTH STORE FÖR ANVÄNDARE
